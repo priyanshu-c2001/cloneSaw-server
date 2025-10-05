@@ -20,13 +20,14 @@ const sendMail = async (req, res) => {
         });
 
         await transporter.sendMail({
-            from: email,
+            from: process.env.EMAIL,   
+            replyTo: email,            
             to: process.env.EMAIL,
             subject: `New message from ${name}`,
             text: message,
             html: `<p><b>Name:</b> ${name}</p>
-             <p><b>Email:</b> ${email}</p>
-             <p><b>Message:</b><br>${message}</p>`
+           <p><b>Email:</b> ${email}</p>
+           <p><b>Message:</b><br>${message}</p>`
         });
 
         res.json({ message: "Message sent successfully!" });
