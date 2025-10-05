@@ -47,8 +47,8 @@ const login = async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             expires: new Date(Date.now() + 8 * 3600000),
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
+            secure: true,                
+            sameSite: "None"             
         }).status(200).json({ data: user });
     }
     catch (err) {
