@@ -11,7 +11,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const mailRoutes = require('./routes/mailSendRoute');
 
 app.use(cors({
-    origin: "http://localhost:5173/",
+    origin: "https://clone-saw-client.vercel.app",
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
