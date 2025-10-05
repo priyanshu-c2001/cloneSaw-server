@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require('resend');
 
 const sendMail = async (req, res) => {
     const { name, email, message } = req.body;
@@ -8,51 +8,25 @@ const sendMail = async (req, res) => {
     }
 
     try {
-        // Configure with secure settings and longer timeout
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465, // Use SSL port
-            secure: true, // Use SSL
-            auth: {
-                user: process.env.EMAIL,
-                pass: process.env.EMAIL_PASSWORD // Must be App Password, not regular password
-            },
-            // Add timeout settings
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-            // Additional settings for cloud hosting
-            tls: {
-                rejectUnauthorized: true,
-                minVersion: "TLSv1.2"
-            }
-        });
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
-        // Verify connection before sending
-        await transporter.verify();
-
-        await transporter.sendMail({
-            from: `"Contact Form" <${process.env.EMAIL}>`,
+        await resend.emails.send({
+            from: 'Contact Form <onboarding@resend.dev>', 
             replyTo: email,
             to: process.env.EMAIL,
             subject: `New message from ${name}`,
-            text: message,
-            html: `<p><b>Name:</b> ${name}</p>
-           <p><b>Email:</b> ${email}</p>
-           <p><b>Message:</b><br>${message}</p>`
+            html: `
+                <h2>New Contact Form Submission</h2>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Message:</strong></p>
+                <p>${message.replace(/\n/g, '<br>')}</p>
+            `
         });
 
         res.json({ message: "Message sent successfully!" });
     } catch (err) {
         console.error("Email error:", err);
-
-        // Better error handling
-        if (err.code === 'ETIMEDOUT' || err.code === 'ECONNECTION') {
-            return res.status(503).json({
-                message: "Email service temporarily unavailable. Please try again later."
-            });
-        }
-
         res.status(500).json({
             message: "Failed to send email. Please try again later.",
             error: process.env.NODE_ENV === 'development' ? err.message : undefined
