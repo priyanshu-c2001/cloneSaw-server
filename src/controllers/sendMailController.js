@@ -10,18 +10,19 @@ const sendMail = async (req, res) => {
     try {
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
-            service: "gmail",
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false,
             auth: {
                 user: process.env.EMAIL,
-                pass: process.env.EMAIL_PASSWORD
+                pass: process.env.EMAIL_PASSWORD,
             },
+            logger: true,   
+            debug: true     
         });
 
         await transporter.sendMail({
-            from: process.env.EMAIL,   
-            replyTo: email,            
+            from: process.env.EMAIL,
+            replyTo: email,
             to: process.env.EMAIL,
             subject: `New message from ${name}`,
             text: message,
