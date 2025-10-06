@@ -46,9 +46,9 @@ const login = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 8 * 60 * 60 * 1000
+            expires: new Date(Date.now() + 8 * 3600000),
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
         }).status(200).json({ data: user });
     }
     catch (err) {
@@ -57,13 +57,13 @@ const login = async (req, res) => {
 }
 
 const logOut = (req, res) => {
-    res.clearCookie("token", {
+    res.cookie("token", null, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none"
-    });
-    res.status(200).json({ message: "Logged out successfully" });
-};
+        expires: new Date(Date.now()),
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
+    }).status(200).json({ msg: "Logged out Successfully..!!!" });
+}
 
 const createPost = async (req, res) => {
     const { title, author, content, imageUrl } = req.body;
