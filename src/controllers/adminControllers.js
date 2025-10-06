@@ -46,9 +46,9 @@ const login = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            expires: new Date(Date.now() + 8 * 3600000),
-            secure: true,                
-            sameSite: "None"             
+            secure: true,
+            sameSite: "none",
+            maxAge: 8 * 60 * 60 * 1000
         }).status(200).json({ data: user });
     }
     catch (err) {
@@ -57,12 +57,13 @@ const login = async (req, res) => {
 }
 
 const logOut = (req, res) => {
-    res.cookie("token", null, {
+    res.clearCookie("token", {
         httpOnly: true,
         secure: true,
-        expires: new Date(Date.now())
-    }).status(200).json({ msg: "Logged out Successfully..!!!" });
-}
+        sameSite: "none"
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+};
 
 const createPost = async (req, res) => {
     const { title, author, content, imageUrl } = req.body;
